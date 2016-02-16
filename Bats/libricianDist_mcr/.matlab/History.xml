@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<history>
+<session>
+<command time_stamp="152a8012e08">%-- 03/02/2016 16:39 --%</command>
+<command execution_time="5270">pd = makedist('Rician','s',0,'sigma',2)</command>
+<command execution_time="30" repeat="3">pd.random</command>
+<command execution_time="31739">mcc -C -W cpplib:libricianDist -T link:lib ricianDist.m</command>
+<command execution_time="40">cd</command>
+<command execution_time="166045">mcc -C -W cpplib:libricianDist -T link:lib ricianDist.m</command>
+<command execution_time="90">ls</command>
+<command execution_time="134417">mcc -C -W cpplib:libricianDist -T link:lib ricianDist.m</command>
+<command execution_time="150">deploytool</command>
+<command execution_time="50">computer</command>
+<command batch="1" execution_time="136685" repeat="3">mcc -C -W cpplib:libricianDist -T link:lib ricianDist.m</command>
+</session>
+</history>

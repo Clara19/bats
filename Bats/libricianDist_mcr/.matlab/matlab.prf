@@ -1,0 +1,28 @@
+#MATLAB Preferences
+#Wed Feb 03 20:59:22 GMT 2016
+mlint-configurations-list=SC:\\Users\\mbax2cd2\\AppData\\Roaming\\MathWorks\\MATLAB\\R2015a\\MLintDefaultSettings.txt
+LayoutExport=Btrue
+EditorPromptBeforeExitingDebugMode=Btrue
+PCT_ValidateCloudStartsCluster=Btrue
+WorkspaceBrowserClearConfirmation=Btrue
+PCT_MDCSRequired=Btrue
+RLHiddenB2_WB_2014b_1=I16376
+RLWidthB2_WB_2014b_1_1=I130
+CommandHistoryDeleteConfirm=Btrue
+RLWidthB2_WB_2014b_1_0=I130
+PCT_DeleteProfile=Btrue
+RLPrevInitB2_WB_2014b_1=Btrue
+MatlabExitConfirm=Bfalse
+LayoutChangeDefaultCallback=Btrue
+DocumentsDetailViewerCollapsed=Bfalse
+DocumentsConfirmMatReplace=Btrue
+PCT_RestartPool_ClusterChange=Btrue
+LayoutActivate=Btrue
+DocumentsConfirmMatWorkspaceReplace=Btrue
+DeploytoollastOpenFile=S
+EditorMRU3=S\\\\nask.man.ac.uk\\home$\\Desktop\\ricianDist.m
+EditorMRU2=S\\\\nask.man.ac.uk\\home$\\MATLAB\\libricianDist.h
+CommandWindowClearConfirmation=Btrue
+EditorMRU1=S\\\\nask.man.ac.uk\\home$\\MATLAB\\libricianDist.cpp
+DeploytoolrecentProjects=S\\\\nask.man.ac.uk\\home$\\MATLAB\\Untitled1.prj
+EditorShowNewFilePrompt=Btrue
