@@ -26,22 +26,23 @@ BatManager::BatManager(int b_delay, int b_flight, int b_hearingThreshold, Echo b
 	echo = b_echo;
 };
 
-double BatManager::getAmplitude(BatManager* bat) {
+double BatManager::getAmplitude(double targetX, double targetY, double oTargetStrength) {
+	double distance = Distance(currentState.x, currentState.y, targetX, targetY);
 
-	double distance = Distance(currentState.x, bat->currentState.x, currentState.y, bat->currentState.y);
-
-	double distanceSlope = (currentState.y - bat->currentState.y)/(currentState.x - bat->currentState.x);
-	double tanAngle = (tan(currentState.heading) - distanceSlope) / (1 - tan(currentState.heading)*distanceSlope);
-
-	double azimuth = (echo.A + 2)*(cos(atan(tanAngle)) - 1);
+	double dotProduct = (cos(currentState.heading)*(targetX - currentState.x) + sin(currentState.heading)*(targetX - currentState.y));
+	//(currentState.x - bat->currentState.x);
+	//double tanAngle = (tan(currentState.heading) - distanceSlope) / (1 - tan(currentState.heading)*distanceSlope);
+	double cosAngle = dotProduct / distance;
+	double azimuth = (echo.A + 2)*(cosAngle - 1);
 	double soundLosses = 20 * (log(0.1 / distance)) + distance*echo.c;
-	return echo.sourceLevel + bat->echo.targetStrength + azimuth + soundLosses;
+	return echo.sourceLevel + oTargetStrength + azimuth + soundLosses;
 }
 
 bool BatManager::echolocateBat(BatManager* bat) {
 	bool isSeen = false;
-	if (getAmplitude(bat) > hearingThreshold) {
-		if (identifiedBats.size()==100)
+	double amplitude = getAmplitude(bat->currentState.x, bat->currentState.y, bat->echo.targetStrength);
+	if (amplitude >= hearingThreshold) {
+		if (identifiedBats.size()==1000)
 			identifiedBats.erase(identifiedBats.begin());
 		identifiedBats.insert(std::pair<int, BatManager*>(time + 1, bat));
 		isSeen = true;
@@ -58,38 +59,49 @@ bool BatManager::echolocateBat(BatManager* bat) {
 	return isSeen;
 }
 
+void BatManager::locatePrey(Prey *preys[]) {
+	identifiedPreys.clear();
+	for (int i = 0; i < sizeof(preys); i++) {
+		if (getAmplitude(preys[i]->currentState.x, preys[i]->currentState.y, preys[i]->targetStrength)) {
+			double dist = Distance(currentState.x, currentState.y, preys[i]->currentState.x, preys[i]->currentState.y);
+			identifiedPreys.insert(std::pair<double, Prey*>(dist, preys[i]);
+		}
+	}
+}
 
-BatState BatManager::updateBat() {
+State BatManager::updateBat() {
 
 	if (time==0) {
-		currentState.heading = myRandom(-PI, PI);
-		currentState.x = myRandom(1, 10);
-		currentState.y = myRandom(1, 10);
+		currentState.heading = myRandom( -3*PI/4, -PI/4);
+		currentState.x = myRandom(-3, 3);
+		currentState.y = myRandom(28, 30);
 		time++;
 		return currentState;		
 	}
 
-	BatState newState;
+	State newState;
 	newState.speed = velocityDist.getRand(4.81, 2.18);
 
 	double desiredHeading;
-	if (myRandom(0,1) < 0.05)
-		flight = 0;
-	
+	if (flight == 1 && myRandom(0, 1) < 0.05) {
+		flight = 0; leader = NULL;  std::cout << "changed ";
+	}
+	std::cout << flight << std::endl;
 	if (!flight || (flight && leader->time<delay) ) {
 		desiredHeading = (*(gcnew VonMisesDist(currentState.heading, 557))).getRand();
 		//std::cout << desiredHeading << std::endl;
 	}
 	else
 	{
-		std::map<int, BatState>::iterator leaderPos = leader->prevStates.find(time - delay);
+		std::map<int, State>::iterator leaderPos = leader->prevStates.find(time - delay);
 		if (leaderPos != leader->prevStates.end()) {
+			//std::cout << leaderPos->second.heading;
 			desiredHeading = (*(gcnew VonMisesDist((currentState.heading + leaderPos->second.heading)/2, 2473))).getRand();
 		}
 	}
 
 	double headingChange = desiredHeading - currentState.heading;
-	double maxAngularChange = 9.81 / 50 / newState.speed;
+	double maxAngularChange = 4 * 9.81 / 50 / newState.speed;
 	if (abs(headingChange) <= maxAngularChange)
 		newState.heading = desiredHeading;
 	else if (headingChange < maxAngularChange)
@@ -102,9 +114,10 @@ BatState BatManager::updateBat() {
 	newState.y = currentState.y + newState.speed * 1 / 50 * sin(newState.heading);
 	if (prevStates.size() == 1000)
 		prevStates.erase(prevStates.begin());
-	prevStates.insert(std::pair<int, BatState>(time, currentState));
+	prevStates.insert(std::pair<int, State>(time, currentState));
 	time = time + 1;
 	currentState = newState;
+
 	return newState;
 }	
 		

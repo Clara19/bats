@@ -39,16 +39,40 @@
     <ClCompile Include="BatManager.cpp">
       <Filter>Source Files\model</Filter>
     </ClCompile>
+    <ClCompile Include="Model_OBJ.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cubemaps_skybox_optimized.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\freeglut.dll" />
     <None Include="mclmcr.dll" />
     <None Include="mclmcrrt8_5.dll" />
     <None Include="packages.config" />
+    <None Include="glew32.dll" />
+    <None Include="glfw3.dll" />
+    <None Include="cubemaps.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="cubemaps.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="skybox.vs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="mclmcr.lib" />
     <Library Include="mclmcrrt.lib" />
+    <Library Include="SOIL.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RicianDist.h">
@@ -62,6 +86,18 @@
     </ClInclude>
     <ClInclude Include="BatManager.h">
       <Filter>Source Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model_OBJ.h">
+      <Filter>Source Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Reader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Source Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Source Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

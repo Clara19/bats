@@ -1,9 +1,9 @@
 #pragma once
 #include <map>
 #include "RicianDist.h"
+#include "Prey.h"
 
-
-struct BatState {
+struct State {
 	double speed, heading, x, y;
 };
 struct Echo {
@@ -11,10 +11,13 @@ struct Echo {
 };
 class BatManager {
 public:
-	std::map<int, BatState> prevStates;
+	std::map<int, State> prevStates;
 	std::map<int, BatManager*> identifiedBats;
-	BatState currentState;
+	std::map<double, Prey*> identifiedPreys;
+	std::map<int, State> prevStates;
+	State currentState;
 	int delay, flight, time = 0;
+
 	BatManager* leader = NULL;
 	double hearingThreshold;
 	RicianDist velocityDist;
@@ -22,7 +25,8 @@ public:
 
 public:
 	BatManager(int b_delay, int b_flight, int b_hearingThreshold, Echo b_echo);
-	double getAmplitude(BatManager* bat);
+	double getAmplitude(double targetX, double targetY, double targetStrength);
 	bool echolocateBat(BatManager* bat);
-	BatState updateBat();
+	void locatePrey(Prey *preys[]);
+	State updateBat();
 };

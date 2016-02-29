@@ -74,8 +74,8 @@
     <LibraryPath>C:\Users\Clara\Desktop\Opengl\freeglut\lib;C:\Program Files\MATLAB\MATLAB Runtime\v85\extern\lib\win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Clara\Desktop\Opengl\freeglut\include;C:\Program Files\MATLAB\MATLAB Runtime\v85\extern\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Clara\Desktop\Opengl\freeglut\lib\x64;C:\Program Files\MATLAB\MATLAB Runtime\v85\extern\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Clara\Desktop\Opengl\freeglut\include;C:\Users\Clara\Desktop\Opengl\glew-1.13.0\include;C:\Users\Clara\Desktop\Opengl\glfw-3.1.2.bin.WIN64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Clara\Desktop\Opengl\glfw-3.1.2.bin.WIN64\lib-vc2015;C:\Users\Clara\Desktop\Opengl\freeglut\lib\x64;C:\Users\Clara\Desktop\Opengl\glew-1.13.0\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,10 +92,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\MATLAB\MATLAB Runtime\v85\extern\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Clara\Documents\Visual Studio 2015\Projects\Bats\Bats\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freeglut.lib;libricianDist.lib;mclmcrrt.lib;mclmcr.lib;libmx.lib;libmat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SOIL.lib;glew32s.lib;freeglut.lib;glfw3.lib;libricianDist.lib;mclmcrrt.lib;mclmcr.lib;libmx.lib;libmat.lib;kernel32.lib;user32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,25 +127,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BatManager.cpp" />
+    <ClCompile Include="cubemaps_skybox_optimized.cpp" />
     <ClCompile Include="EchoDirect.cpp" />
+    <ClCompile Include="Model_OBJ.cpp" />
+    <ClCompile Include="Reader.cpp" />
     <ClCompile Include="RicianDist.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Source1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\freeglut.dll" />
+    <None Include="cubemaps.frag" />
+    <None Include="cubemaps.vs" />
+    <None Include="glew32.dll" />
+    <None Include="glfw3.dll" />
     <None Include="mclmcr.dll" />
     <None Include="mclmcrrt8_5.dll" />
     <None Include="packages.config" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vs" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="mclmcr.lib" />
     <Library Include="mclmcrrt.lib" />
+    <Library Include="SOIL.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="EchoDirect.h" />
     <ClInclude Include="BatManager.h" />
+    <ClInclude Include="Prey.h" />
+    <ClInclude Include="Reader.h" />
+    <ClInclude Include="Model_OBJ.h" />
     <ClInclude Include="RicianDist.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="VonMisesDist.h" />
   </ItemGroup>
   <ItemGroup>
