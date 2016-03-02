@@ -99,5 +99,11 @@
     <ClInclude Include="shader.h">
       <Filter>Source Files\utils</Filter>
     </ClInclude>
+    <ClInclude Include="Prey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Base.h">
+      <Filter>Source Files\model</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

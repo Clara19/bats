@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include <vector>
+#include <cstdlib>
 
 // Std. Includes
 #include <string>
@@ -48,6 +50,7 @@ GLfloat zoom = 1;
 GLsizei width = 1200, height = 800;
 Echo echo, echo1;
 BatManager *bat, *bat1;
+std::vector<Prey*> preys;
 Model_OBJ obj, obj1;
 int noFrames, batView = 0, echos = 0;
 bool seesBat0, seesBat1;
@@ -136,6 +139,7 @@ void DrawDisk(float cx, float cy, float z, float r, int num_segments)
 	glLineWidth(1);
 
 }
+
 //the display function draws the scene and redraws it
 void timerFunc(int value) {
 	if (echos == 0)
@@ -144,6 +148,7 @@ void timerFunc(int value) {
 		echos = 5;
 		seesBat1 = (*bat).echolocateBat(bat1);
 		seesBat0 = (*bat1).echolocateBat(bat);
+		(*bat).locatePrey(preys);
 
 	}
 
@@ -169,7 +174,11 @@ void display() {
 		(*bat).updateBat();
 		(*bat1).updateBat();
 	}
-	
+	preys.erase(std::remove_if(preys.begin(), preys.end(),
+		[](Prey* i) { 
+			double dist = Distance(bat->currentState.x, bat->currentState.y, i->currentState.x, i->currentState.y);
+			return dist<0.5; 
+		}), preys.end());
 	//std::cout << bat->currentState.speed << " " << bat->currentState.heading << " " << bat->currentState.x << " " << bat->currentState.y << std::endl;
 	BatManager* mainBat, *otherBat;
 	if (batView) {
@@ -182,6 +191,16 @@ void display() {
 		otherBat = bat1;
 		seesOtherBat = seesBat1;
 	}
+	glm::vec4 batColour;
+	if (seesOtherBat)
+		batColour = glm::vec4(1.0f, 0.1f, 0.1f, 1.0f);
+	else
+		batColour = glm::vec4(0.4f, 0.4f, 0.4f, 0.4f);
+
+	vector<Prey *> seenPreys;
+	std::for_each(mainBat->identifiedPreys.begin(), mainBat->identifiedPreys.end(), [&](std::pair<const double, Prey*> &ref) {
+		seenPreys.push_back((Prey *)ref.second);
+	});
 	glEnable(GL_SCISSOR_TEST);
 
 
@@ -251,6 +270,14 @@ void display() {
 		glVertex2f(it.second.x, it.second.y);
 	}
 	glEnd();
+
+	glPointSize(4.0 / zoom);
+	glBegin(GL_POINTS);
+	for (auto const& prey : preys) {
+		glColor3f(0.0f, 0.0f, 1.0f);
+		glVertex2f(prey->currentState.x, prey->currentState.y);
+	}
+	glEnd();
 	glColor3f(0.3, 0.3, 0.3);
 	glBegin(GL_LINES);
 	for (GLfloat i = -100; i <= 100; i += 1.5) {
@@ -265,7 +292,6 @@ void display() {
 	glViewport(0, (GLsizei)height / 2, (GLsizei)width/2 , (GLsizei)height/2);
 	//glScissor(0, 0, (float)width, height);
 	//enable depth
-
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -341,7 +367,6 @@ void display() {
 	}
 	glEnd();
 	glPushMatrix();
-	GLfloat alpha;
 
 	glTranslatef(otherBat->currentState.x, 0.2 - up*0.02, -otherBat->currentState.y);
 
@@ -351,18 +376,26 @@ void display() {
 	glRotatef(350, 1, 0, 0);
 
 	   glScalef(0.3, 0.2, 0.2); 
-	   if (seesOtherBat)
-	   	alpha = 1;
-	   else
-	   	alpha = 0.5;
+	   
 	   if (up>0)
-		   obj.Draw(alpha, 0.1f / alpha, 0.1f / alpha, alpha);
+		   obj.Draw(batColour.x, batColour.y, batColour.z, batColour.w);
 	   else
-		   obj1.Draw(alpha, 0.1f / alpha, 0.1f / alpha, alpha);
+		   obj1.Draw(batColour.x, batColour.y, batColour.z, batColour.w);
 	   
 		glPopMatrix();
 
-
+		
+		for (auto const& prey : preys) {
+			glPushMatrix();
+			if(std::find(seenPreys.begin(), seenPreys.end(), prey)!=seenPreys.end())
+				glColor4f(0.9f, 0.1f, 0.1f, 1.0f);
+			else
+				glColor4f(0.5f, 0.5f, 0.5f, 0.4f);
+			glTranslatef(prey->currentState.x, 0.0, -prey->currentState.y);
+			glutSolidSphere(0.3, 20.0, 20.0);
+			glPopMatrix();
+		}
+		
 	glPopMatrix();
 	//
 	glViewport(0, 0, (GLsizei)width/2, (GLsizei)height/2);
@@ -432,17 +465,26 @@ void display() {
 	glRotatef(330, 1, 0, 0);
 
 	glScalef(0.3, 0.2, 0.2);
-	if (seesOtherBat)
-		alpha = 1;
+
+	if (up>0)
+		obj.Draw(batColour.x, batColour.y, batColour.z, batColour.w);
 	else
-		alpha = 0.5;
-	if (up>0 )
-		obj.Draw(alpha, 0.1f / alpha, 0.1f / alpha, alpha);
-	else
-		obj1.Draw(alpha, 0.1f / alpha, 0.1f / alpha, alpha);
+		obj1.Draw(batColour.x, batColour.y, batColour.z, batColour.w);
 
 	glPopMatrix();
+	glPopMatrix();
 
+
+	for (auto const& prey : preys) {
+		glPushMatrix();
+		if (std::find(seenPreys.begin(), seenPreys.end(), prey) != seenPreys.end())
+			glColor4f(0.9f, 0.1f, 0.1f, 1.0f);
+		else
+			glColor4f(0.5f, 0.5f, 0.5f, 0.4f);
+		glTranslatef(prey->currentState.x, 0.0, -prey->currentState.y);
+		glutSolidSphere(0.4, 20.0, 20.0);
+		glPopMatrix();
+	}
 	glPopMatrix();
 
 	glDisable(GL_SCISSOR_TEST);
@@ -480,6 +522,13 @@ void keyboard(unsigned char key, int x, int y)
 		zoom *= 5.0/4;
 	if (key == 'c')
 		zoom *= 4.0/5;
+	if (key == 'p') {
+		std::vector<Prey*>::iterator it;
+		double rand = myRandom(-PI, PI/2);
+		it = preys.begin();
+		preys.insert(it, new Prey(bat->currentState.x + 7 * cos(bat->currentState.heading+0.01), bat->currentState.y + 7 * sin(bat->currentState.heading + 0.01), -40));
+
+	}
 }
 
 

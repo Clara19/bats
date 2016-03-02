@@ -1,23 +1,9 @@
 #include <iostream>
 #include "BatManager.h"
-#include <cmath>
 #include "RicianDist.h"
 #include "VonMisesDist.h"
 #define PI 3.14159265
 
-double myRandom(double min, double max)
-//Return random double within range [0,1]
-{
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> dis(min, max);
-	return dis(gen);
-}
-
-double Distance(double dX0, double dY0, double dX1, double dY1)
-{
-	return sqrt((dX1 - dX0)*(dX1 - dX0) + (dY1 - dY0)*(dY1 - dY0));
-}
 
 BatManager::BatManager(int b_delay, int b_flight, int b_hearingThreshold, Echo b_echo) : velocityDist(4.81, 2.18) {
 	delay = b_delay;
@@ -29,7 +15,7 @@ BatManager::BatManager(int b_delay, int b_flight, int b_hearingThreshold, Echo b
 double BatManager::getAmplitude(double targetX, double targetY, double oTargetStrength) {
 	double distance = Distance(currentState.x, currentState.y, targetX, targetY);
 
-	double dotProduct = (cos(currentState.heading)*(targetX - currentState.x) + sin(currentState.heading)*(targetX - currentState.y));
+	double dotProduct = (cos(currentState.heading)*(targetX - currentState.x) + sin(currentState.heading)*(targetY - currentState.y));
 	//(currentState.x - bat->currentState.x);
 	//double tanAngle = (tan(currentState.heading) - distanceSlope) / (1 - tan(currentState.heading)*distanceSlope);
 	double cosAngle = dotProduct / distance;
@@ -59,12 +45,15 @@ bool BatManager::echolocateBat(BatManager* bat) {
 	return isSeen;
 }
 
-void BatManager::locatePrey(Prey *preys[]) {
+void BatManager::locatePrey(std::vector<Prey*> preys) {
 	identifiedPreys.clear();
-	for (int i = 0; i < sizeof(preys); i++) {
-		if (getAmplitude(preys[i]->currentState.x, preys[i]->currentState.y, preys[i]->targetStrength)) {
-			double dist = Distance(currentState.x, currentState.y, preys[i]->currentState.x, preys[i]->currentState.y);
-			identifiedPreys.insert(std::pair<double, Prey*>(dist, preys[i]);
+	for (auto const& prey : preys) {
+		double targetStrengthh = prey->targetStrength;
+
+		double soundInt = getAmplitude(prey->currentState.x, prey->currentState.y, prey->targetStrength);
+		if (soundInt>=hearingThreshold) {
+			double dist = Distance(currentState.x, currentState.y, prey->currentState.x, prey->currentState.y);
+			identifiedPreys.insert(std::pair<double, Prey*>(dist, prey));
 		}
 	}
 }
@@ -84,10 +73,23 @@ State BatManager::updateBat() {
 
 	double desiredHeading;
 	if (flight == 1 && myRandom(0, 1) < 0.05) {
-		flight = 0; leader = NULL;  std::cout << "changed ";
+		flight = 0; leader = NULL;  //std::cout << "changed ";
 	}
-	std::cout << flight << std::endl;
-	if (!flight || (flight && leader->time<delay) ) {
+	//std::cout << flight << std::endl;
+	std::map<double, Prey*>::iterator closestPrey = identifiedPreys.begin();
+	if (closestPrey != identifiedPreys.end()) {
+		double preyX, preyY;
+		preyX = closestPrey->second->currentState.x, preyY = closestPrey->second->currentState.y;
+		double distance = Distance(currentState.x, currentState.y, preyX , preyY);
+
+		double dotProduct = ((preyX - currentState.x));
+		double cosAngle = dotProduct / distance;
+		if (preyY < currentState.y)
+			desiredHeading = -acos(cosAngle);
+		else
+			desiredHeading = acos(cosAngle);
+	}
+	else if (!flight || (flight && leader->time<delay) ) {
 		desiredHeading = (*(gcnew VonMisesDist(currentState.heading, 557))).getRand();
 		//std::cout << desiredHeading << std::endl;
 	}
@@ -102,7 +104,7 @@ State BatManager::updateBat() {
 
 	double headingChange = desiredHeading - currentState.heading;
 	double maxAngularChange = 4 * 9.81 / 50 / newState.speed;
-	if (abs(headingChange) <= maxAngularChange)
+	if ((abs(headingChange)) < (maxAngularChange) )
 		newState.heading = desiredHeading;
 	else if (headingChange < maxAngularChange)
 		newState.heading = currentState.heading - maxAngularChange;

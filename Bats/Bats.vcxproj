@@ -153,6 +153,7 @@
     <Library Include="SOIL.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="EchoDirect.h" />
     <ClInclude Include="BatManager.h" />
